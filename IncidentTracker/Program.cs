@@ -22,10 +22,10 @@ namespace IncidentTracker
            
        
 
-            _sut.Fire(Triggers.Create);
-            _sut.Fire(Triggers.Validate);
-            _sut.Fire(Triggers.Execute);
-            _sut.Fire(Triggers.Archive);
+            _sut.Create();
+            _sut.Validate();
+            _sut.Execute();
+            _sut.Archive();
 
 
             Console.WriteLine("Press Any Key....");

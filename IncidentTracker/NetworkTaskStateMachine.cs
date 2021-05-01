@@ -48,15 +48,25 @@ namespace IncidentTracker
         }
 
         protected string GetAllowedTransitions() => string.Join(",", _machine.GetPermittedTriggers().ToList());
-        protected string AllowedTransitions() =>    $"State: {CurrentState} --> Allowed [{GetAllowedTransitions()}]";
+        protected string AllowedTransitions() => $"State: {CurrentState} --> Allowed [{GetAllowedTransitions()}]";
 
-        public void Fire(Triggers trigger) {
-            
-            Console.WriteLine(AllowedTransitions());
 
-            _machine.Fire(trigger);
-        }
-        
+        public void Create() { _machine.Fire(Triggers.Create); }
+        public void Validate() { _machine.Fire(Triggers.Validate); }
+        public void Edit() { _machine.Fire(Triggers.Edit); }
+        public void Delete() { _machine.Fire(Triggers.Delete); }
+        public void Execute() { _machine.Fire(Triggers.Execute); }
+        public void Archive() { _machine.Fire(Triggers.Archive); }
+        public void Abandon() { _machine.Fire(Triggers.Abandon); }
+
+        //public void Fire(Triggers trigger)
+        //{
+
+        //    Console.WriteLine(AllowedTransitions());
+
+        //    _machine.Fire(trigger);
+        //}
+
 
 
         public string GetInfo()
