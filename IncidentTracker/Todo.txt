@@ -1,0 +1,4 @@
+﻿WPF 
+-- StateMachine Wrapper
+-- Current State
+-- (series of buttons (actions Possible))
