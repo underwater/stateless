@@ -10,7 +10,7 @@ namespace IncidentTracker
     {
 
         static StateMachine<States, Triggers> _machine;
-        private static NetworkTaskStateMachine<Incident> _sut;
+        private static IncidentStateMachine _incident;
 
         static public States CurrentState { get; private set; }
 
@@ -18,14 +18,14 @@ namespace IncidentTracker
         {
             Console.WriteLine("State Machine Example!\n\n");
            
-            _sut = new NetworkTaskStateMachine<Incident>();
+            _incident = new IncidentStateMachine();
            
        
 
-            _sut.Create();
-            _sut.Validate();
-            _sut.Execute();
-            _sut.Archive();
+            _incident.Create();
+            _incident.Validate();
+            _incident.Execute();
+            _incident.Archive();
 
 
             Console.WriteLine("Press Any Key....");
