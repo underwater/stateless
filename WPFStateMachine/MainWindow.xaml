@@ -10,9 +10,13 @@
     <Window.DataContext>
         <local:IncidentViewModel/>
     </Window.DataContext>
-    <Grid>
-        <TextBox FontSize="24" Text="{Binding Title}"/>
-
-
-    </Grid>
+    <StackPanel Orientation="Vertical">
+        <Button Command="{Binding CreateCommand}">Create</Button>
+        <Button Command="{Binding ValidateCommand}">Validate</Button>
+        <Button Command="{Binding ExecuteCommand}">Excecute</Button>
+        <Button Command="{Binding AbandonCommand}">Abandon</Button>
+        <Button Command="{Binding EditCommand}">Edit</Button>
+        <Button Command="{Binding DeleteCommand}">Delete</Button>
+        <Button Command="{Binding ArchiveCommand}">Archive</Button>
+    </StackPanel>
 </Window>

@@ -32,6 +32,7 @@ namespace WPFStateMachine
     {
         StateMachine<States, Triggers> _machine;
 
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public States CurrentState { get; private set; }
@@ -39,7 +40,7 @@ namespace WPFStateMachine
         public IncidentStateMachine()
         {
             _machine = new StateMachine<States, Triggers>(() => CurrentState, s => CurrentState = s);
-            InitializeTransitions();
+            DefineTransitions();
             InitializeLogger();
             var graph = GetInfo();
         }
@@ -49,7 +50,7 @@ namespace WPFStateMachine
             _machine.OnTransitioned(t => Console.WriteLine($"{t.Trigger}"));
             _machine.OnTransitionCompleted(t => Console.WriteLine($"  {t.Source}-->{t.Destination}\n"));
         }
-        protected virtual void InitializeTransitions()
+        protected virtual void DefineTransitions()
         {
             // configure transitions
             _machine.Configure(States.Undefined)
@@ -133,6 +134,7 @@ namespace WPFStateMachine
             OnPropertyChanged(nameof(AllowAbandon));
             OnPropertyChanged(nameof(AllowArchive));
             OnPropertyChanged(nameof(AllowDelete));
+            OnPropertyChanged(nameof(CurrentState));
         }
 
      
