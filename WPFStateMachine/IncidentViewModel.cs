@@ -1,8 +1,5 @@
 ﻿using ReactiveUI;
-using System;
-using System.Diagnostics;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace WPFStateMachine
@@ -13,20 +10,18 @@ namespace WPFStateMachine
         public IncidentStateMachine _incident { get; private set; }
 
 
-        public string Title
-        {
-            get => title;
-            set => this.RaiseAndSetIfChanged(ref title, value);
-        }
-
-
         private ObservableAsPropertyHelper<States> currentState;
         public States CurrentState => currentState.Value;
 
+        private bool isBusy;
+        public bool IsBusy
+        {
+            get => isBusy;
+            set => this.RaiseAndSetIfChanged(ref isBusy, value);
+        }
+
         public IncidentViewModel()
         {
-            Title = "State Machine Example";
-
 
             _incident = new IncidentStateMachine();
 
@@ -34,30 +29,30 @@ namespace WPFStateMachine
                   .WhenAnyValue(x => x.CurrentState)
                   .ToProperty(this, x => x.CurrentState);
 
+
+
             var canCreate = _incident.WhenAnyValue(i => i.AllowCreate);
             CreateCommand = ReactiveCommand.CreateFromTask(onCreateAsync, canCreate);
 
-            var canExcecute = _incident.WhenAnyValue(i => i.AllowExecute); 
-            ExecuteCommand = ReactiveCommand.CreateFromTask(onExecuteAsync, canExcecute, outputScheduler: RxApp.MainThreadScheduler);
+            var canExcecute = _incident.WhenAnyValue(i => i.AllowExecute);
+            ExecuteCommand = ReactiveCommand.CreateFromTask(onExecuteAsync, canExcecute);
 
             var canValidate = _incident.WhenAnyValue(i => i.AllowValidate);
-            ValidateCommand = ReactiveCommand.CreateFromTask(onValidateAsync, canValidate, outputScheduler: RxApp.MainThreadScheduler);
+            ValidateCommand = ReactiveCommand.CreateFromTask(onValidateAsync, canValidate);
 
             var canDelete = _incident.WhenAnyValue(i => i.AllowDelete);
-            DeleteCommand = ReactiveCommand.CreateFromTask(onDeleteAsync, canDelete, outputScheduler: RxApp.MainThreadScheduler);
+            DeleteCommand = ReactiveCommand.CreateFromTask(onDeleteAsync, canDelete);
 
             var canArchive = _incident.WhenAnyValue(i => i.AllowArchive);
-            ArchiveCommand = ReactiveCommand.CreateFromTask(onArchiveAsync, canArchive, outputScheduler: RxApp.MainThreadScheduler);
+            ArchiveCommand = ReactiveCommand.CreateFromTask(onArchiveAsync, canArchive);
 
             var canAbandon = _incident.WhenAnyValue(i => i.AllowAbandon);
-            AbandonCommand = ReactiveCommand.CreateFromTask(onAbandonAsync, canAbandon, outputScheduler: RxApp.MainThreadScheduler);
+            AbandonCommand = ReactiveCommand.CreateFromTask(onAbandonAsync, canAbandon);
+
+
 
         }
 
-        private void onCreate()
-        {
-            Debug.WriteLine("Created");
-        }
 
         public ReactiveCommand<Unit, Unit> ValidateCommand { get; }
         public ReactiveCommand<Unit, Unit> ExecuteCommand { get; }
@@ -69,40 +64,51 @@ namespace WPFStateMachine
 
         private async Task onCreateAsync()
         {
-            _incident.Create();
             await DoSlowWork();
+            _incident.Create();
+
         }
 
         private async Task onDeleteAsync()
         {
-            _incident.Delete();
             await DoSlowWork();
+            _incident.Delete();
+
         }
 
         private async Task onArchiveAsync()
         {
-            _incident.Archive();
             await DoSlowWork();
+            _incident.Archive();
+
         }
 
         private async Task onAbandonAsync()
         {
-            _incident.Abandon();
             await DoSlowWork();
+            _incident.Abandon();
+
         }
 
         private async Task onExecuteAsync()
         {
-            _incident.Excecute();
             await DoSlowWork();
+            _incident.Excecute();
+
         }
 
         private async Task onValidateAsync()
         {
             await DoSlowWork();
+            _incident.Validate();
+
         }
 
-        private async Task DoSlowWork() => await Task.Delay(2000);
-
+        private async Task DoSlowWork()
+        {
+            IsBusy = true;
+            await Task.Delay(2000);
+            IsBusy = false;
+        }
     }
 }
