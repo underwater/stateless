@@ -1,0 +1,2 @@
+﻿1) observable as prop helper --> not working\
+3) what is the threading issue about in the create

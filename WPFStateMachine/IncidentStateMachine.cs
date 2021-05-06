@@ -1,4 +1,5 @@
-﻿using Stateless;
+﻿using ReactiveUI;
+using Stateless;
 using Stateless.Graph;
 using System;
 using System.ComponentModel;
@@ -11,7 +12,6 @@ namespace WPFStateMachine
     {
         Create,
         Validate,
-        Edit,
         Delete,
         Execute,
         Archive,
@@ -28,14 +28,31 @@ namespace WPFStateMachine
         Abandoned,
         Deleted
     }
-    public class IncidentStateMachine :INotifyPropertyChanged
+    public class IncidentStateMachine : INotifyPropertyChanged
     {
         StateMachine<States, Triggers> _machine;
+        private States currentState;
+
+        public States CurrentState { 
+            get => currentState; 
+            private set { currentState = value; 
+                OnPropertyChanged(); 
+            } }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public States CurrentState { get; private set; }
+
+
+
+        public bool AllowCreate => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Create);
+        public bool AllowExecute => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Execute);
+        public bool AllowValidate => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Validate);
+        public bool AllowAbandon => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Abandon);
+        public bool AllowArchive => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Archive);
+        public bool AllowDelete => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Delete);
+
+
 
         public IncidentStateMachine()
         {
@@ -60,7 +77,6 @@ namespace WPFStateMachine
             //.OnExit(() => { });
 
             _machine.Configure(States.Active)
-                .PermitReentry(Triggers.Edit)
                 .Permit(Triggers.Validate, States.Validated)
                 .Permit(Triggers.Delete, States.Deleted);
 
@@ -74,18 +90,17 @@ namespace WPFStateMachine
 
         }
 
+        // generic method to transition
+        //public void Handle(Triggers trigger)
+        //{
+        //    _machine.Fire(trigger);
+        //    NotifyPropertiesChanged();
+        //}
 
-        public bool AllowCreate =>  _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Create);
-        public bool AllowEdit => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Edit);
-        public bool AllowExecute => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Execute);
-        public bool AllowValidate => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Validate);
-        public bool AllowAbandon => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Abandon);
-        public bool AllowArchive => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Archive);
-        public bool AllowDelete => _machine.PermittedTriggers.Any(trigger => trigger == Triggers.Delete);
-
-        public void Create() { 
-            _machine.Fire(Triggers.Create); 
-            NotifyPropertiesChanged(); 
+        public void Create()
+        {
+            _machine.Fire(Triggers.Create);
+            NotifyPropertiesChanged();
         }
         public void Excecute()
         {
@@ -101,11 +116,6 @@ namespace WPFStateMachine
         public void Validate()
         {
             _machine.Fire(Triggers.Validate);
-            NotifyPropertiesChanged();
-        }
-        public void Edit()
-        {
-            _machine.Fire(Triggers.Edit);
             NotifyPropertiesChanged();
         }
         public void Archive()
@@ -127,17 +137,17 @@ namespace WPFStateMachine
         }
         private void NotifyPropertiesChanged()
         {
+            OnPropertyChanged();
             OnPropertyChanged(nameof(AllowCreate));
-            OnPropertyChanged(nameof(AllowEdit));
             OnPropertyChanged(nameof(AllowExecute));
             OnPropertyChanged(nameof(AllowValidate));
             OnPropertyChanged(nameof(AllowAbandon));
             OnPropertyChanged(nameof(AllowArchive));
             OnPropertyChanged(nameof(AllowDelete));
-            OnPropertyChanged(nameof(CurrentState));
+            // OnPropertyChanged(nameof(CurrentState));
         }
 
-     
+
         public string GetInfo()
         {
             string graph = UmlDotGraph.Format(_machine.GetInfo());
